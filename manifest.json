@@ -1,5 +1,6 @@
 {
-    "version": "1.0.2",
-    "file_size":652604,
-    "image": "/zephyr.signed.bin"
+    "version": "1.0.3",
+    "file_size": 654256,
+    "image": "/app_update_1.0.3.bin",
+    "sha256": "388945724bd69f8f9976d75f3149e905791a3558fe8dd2d23d9e7a8603d49ea2"
 }
