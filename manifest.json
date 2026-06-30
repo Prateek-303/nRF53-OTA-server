@@ -1,7 +1,7 @@
 {
-    "version": "1.0.0",
-    "file_size": 648900,
-    "image": "/app_update_1.0.0.bin",
-    "sha256": "6954ac97eead0e2ca901214341853396a76d268a198aa412168b948543329853",
-    "crc32": "310b49a0"
+    "version": "1.0.1",
+    "file_size": 652400,
+    "image": "/app_update_1.0.1.bin",
+    "sha256": "c4d0505dc6c43e1d11bd4037052c01423ed872f436e9cf6791fa7327b22948c6",
+    "crc32": "3c5ce300"
 }
