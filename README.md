@@ -44,37 +44,8 @@ nRF53-OTA-server (this repo)
 ### High-Level Block Diagram
 
 ```
-flowchart TD
-    subgraph DevMachine ["💻 DEVELOPER MACHINE"]
-        direction TB
-        VSCode["VS Code /<br>Source Code"]
-        WestBuild["west build<br>(Zephyr + nRF SDK)"]
-        ManifestPy["update_manifest.py<br>• Compute SHA-256<br>• Compute IEEE CRC-32<br>• Write manifest.json"]
+<img width="2816" height="1536" alt="Gemini_Generated_Image_ek1g4zek1g4zek1g" src="https://github.com/user-attachments/assets/7b41c5a4-8635-4fe2-b354-4b3d33fae3f4" />
 
-        VSCode -- "build_ota.bat" --> WestBuild
-        WestBuild -- "zephyr.signed.bin" --> ManifestPy
-    end
-
-    subgraph GitHub ["🌐 GITHUB REPOSITORY (raw.githubusercontent.com)"]
-        RepoFiles["📄 manifest.json<br>📄 app_update_X.Y.Z.bin<br>📄 authorized_devices.json"]
-    end
-
-    subgraph Device ["📱 nRF7002 DK (nRF5340 SoC)"]
-        Steps["1. Wi-Fi connect<br>2. Fetch manifest.json<br>3. Compare versions<br>4. Stream .bin (1KB chunks)<br>5. Live CRC-32 check<br>6. Final SHA-256 check<br>7. MCUboot image swap<br>8. Reboot → new firmware ✅"]
-    end
-
-    ManifestPy -- "git push origin main" --> RepoFiles
-    RepoFiles -- "HTTPS / TLS 1.2<br>(every 24 hours)" --> Steps
-    
-    %% Styling to match the technical flow
-    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
-    classDef process fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef github fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
-    classDef device fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
-
-    class VSCode,WestBuild,ManifestPy process;
-    class RepoFiles github;
-    class Steps device;
 ```
 
 ---
