@@ -1,5 +1,5 @@
 <div align="center">
-  <h1>🚀 NexusOTA Cloud Server</h1>
+  <h1>🚀 OTA Cloud Server</h1>
   <p><strong>Over-The-Air (OTA) Firmware Delivery Network for nRF5340 & nRF7002 DK</strong></p>
 </div>
 
