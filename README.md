@@ -31,9 +31,8 @@ This repository is the **cloud backend** for the OTA firmware update system. It 
 nRF53-OTA-server (this repo)
  ┣ manifest.json              ← Auto-updated: version, size, SHA256, CRC32
  ┣ authorized_devices.json   ← MAC address whitelist for security
- ┣ app_update_1.0.1.bin      ← V1 signed firmware (LED blink only)
- ┣ app_update_1.0.2.bin      ← V1.1 signed firmware (I2C pin fix)
- ┣ app_update_2.0.0.bin      ← V2 signed firmware (LED + BMP280 + TMP117)
+ ┣ app_update_1.0.0.bin      ← V1 signed firmware (LED blink only)
+ ┣ app_update_1.0.1.bin      ← V2 signed firmware (LED + BMP280 + TMP117)
  ┣ LICENSE
  └ README.md                 ← This file
 ```
@@ -45,51 +44,37 @@ nRF53-OTA-server (this repo)
 ### High-Level Block Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        DEVELOPER MACHINE                            │
-│                                                                     │
-│  ┌──────────────┐    build_ota.bat     ┌──────────────────────────┐│
-│  │  VS Code /   │ ─────────────────▶  │   west build             ││
-│  │  Source Code │                     │   (Zephyr + nRF SDK)     ││
-│  └──────────────┘                     └───────────┬──────────────┘│
-│                                                   │               │
-│                                         zephyr.signed.bin         │
-│                                                   │               │
-│                                       ┌───────────▼──────────────┐│
-│                                       │  update_manifest.py      ││
-│                                       │  • Compute SHA-256        ││
-│                                       │  • Compute IEEE CRC-32   ││
-│                                       │  • Write manifest.json   ││
-│                                       └───────────┬──────────────┘│
-│                                                   │               │
-│                                          git push origin main     │
-└───────────────────────────────────────────────────┼───────────────┘
-                                                    │
-                                    ┌───────────────▼───────────────┐
-                                    │     GITHUB REPOSITORY         │
-                                    │  (raw.githubusercontent.com)  │
-                                    │                               │
-                                    │  ┌─────────────────────────┐  │
-                                    │  │  manifest.json           │  │
-                                    │  │  app_update_X.Y.Z.bin   │  │
-                                    │  │  authorized_devices.json│  │
-                                    │  └─────────────────────────┘  │
-                                    └───────────┬───────────────────┘
-                                                    │  HTTPS / TLS 1.2
-                                                    │  (every 24 hours)
-                                    ┌───────────────▼───────────────┐
-                                    │         nRF7002 DK            │
-                                    │       (nRF5340 SoC)           │
-                                    │                               │
-                                    │  1. Wi-Fi connect             │
-                                    │  2. Fetch manifest.json       │
-                                    │  3. Compare versions          │
-                                    │  4. Stream .bin (1KB chunks)  │
-                                    │  5. Live CRC-32 check         │
-                                    │  6. Final SHA-256 check       │
-                                    │  7. MCUboot image swap        │
-                                    │  8. Reboot → new firmware ✅  │
-                                    └───────────────────────────────┘
+flowchart TD
+    subgraph DevMachine ["💻 DEVELOPER MACHINE"]
+        direction TB
+        VSCode["VS Code /<br>Source Code"]
+        WestBuild["west build<br>(Zephyr + nRF SDK)"]
+        ManifestPy["update_manifest.py<br>• Compute SHA-256<br>• Compute IEEE CRC-32<br>• Write manifest.json"]
+
+        VSCode -- "build_ota.bat" --> WestBuild
+        WestBuild -- "zephyr.signed.bin" --> ManifestPy
+    end
+
+    subgraph GitHub ["🌐 GITHUB REPOSITORY (raw.githubusercontent.com)"]
+        RepoFiles["📄 manifest.json<br>📄 app_update_X.Y.Z.bin<br>📄 authorized_devices.json"]
+    end
+
+    subgraph Device ["📱 nRF7002 DK (nRF5340 SoC)"]
+        Steps["1. Wi-Fi connect<br>2. Fetch manifest.json<br>3. Compare versions<br>4. Stream .bin (1KB chunks)<br>5. Live CRC-32 check<br>6. Final SHA-256 check<br>7. MCUboot image swap<br>8. Reboot → new firmware ✅"]
+    end
+
+    ManifestPy -- "git push origin main" --> RepoFiles
+    RepoFiles -- "HTTPS / TLS 1.2<br>(every 24 hours)" --> Steps
+    
+    %% Styling to match the technical flow
+    classDef default fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    classDef process fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
+    classDef github fill:#f3e5f5,stroke:#8e24aa,stroke-width:2px;
+    classDef device fill:#e8f5e9,stroke:#388e3c,stroke-width:2px;
+
+    class VSCode,WestBuild,ManifestPy process;
+    class RepoFiles github;
+    class Steps device;
 ```
 
 ---
