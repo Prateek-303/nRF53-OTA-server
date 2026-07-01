@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🚀 NexusOTA Cloud Server
+# 🚀 OTA Cloud Server
 
 **Over-The-Air (OTA) Firmware Delivery Network for nRF7002 DK (nRF5340)**
 
